@@ -65,6 +65,30 @@ const paymentSchema = z.object({
   }, 'Provide a valid callback URL starting with http:// or https://'),
   EpayId: z.string(),
   EpayKey: z.string(),
+  YimaEnabled: z.boolean(),
+  YimaPayAddress: z.string().refine((value) => {
+    const trimmed = value.trim()
+    if (!trimmed) return true
+    return /^https?:\/\//.test(trimmed)
+  }, 'Provide a valid URL starting with http:// or https://'),
+  YimaMerchantId: z.string(),
+  YimaMerchantKey: z.string(),
+  YimaNotifyUrl: z.string().refine((value) => {
+    const trimmed = value.trim()
+    if (!trimmed) return true
+    return /^https?:\/\//.test(trimmed)
+  }, 'Provide a valid URL starting with http:// or https://'),
+  YimaReturnUrl: z.string().refine((value) => {
+    const trimmed = value.trim()
+    if (!trimmed) return true
+    return /^https?:\/\//.test(trimmed)
+  }, 'Provide a valid URL starting with http:// or https://'),
+  YimaSubscriptionReturnUrl: z.string().refine((value) => {
+    const trimmed = value.trim()
+    if (!trimmed) return true
+    return /^https?:\/\//.test(trimmed)
+  }, 'Provide a valid URL starting with http:// or https://'),
+  YimaMinTopUp: z.coerce.number().min(0),
   Price: z.coerce.number().min(0),
   MinTopUp: z.coerce.number().min(0),
   CustomCallbackAddress: z.string().refine((value) => {
@@ -246,6 +270,16 @@ export function PaymentSettingsSection({
       PayAddress: removeTrailingSlash(values.PayAddress),
       EpayId: values.EpayId.trim(),
       EpayKey: values.EpayKey.trim(),
+      YimaEnabled: values.YimaEnabled as boolean,
+      YimaPayAddress: removeTrailingSlash(values.YimaPayAddress),
+      YimaMerchantId: values.YimaMerchantId.trim(),
+      YimaMerchantKey: values.YimaMerchantKey.trim(),
+      YimaNotifyUrl: removeTrailingSlash(values.YimaNotifyUrl),
+      YimaReturnUrl: removeTrailingSlash(values.YimaReturnUrl),
+      YimaSubscriptionReturnUrl: removeTrailingSlash(
+        values.YimaSubscriptionReturnUrl
+      ),
+      YimaMinTopUp: values.YimaMinTopUp as number,
       CustomCallbackAddress: removeTrailingSlash(values.CustomCallbackAddress),
     }
 
@@ -253,6 +287,16 @@ export function PaymentSettingsSection({
       PayAddress: removeTrailingSlash(initialRef.current.PayAddress),
       EpayId: initialRef.current.EpayId.trim(),
       EpayKey: initialRef.current.EpayKey.trim(),
+      YimaEnabled: initialRef.current.YimaEnabled,
+      YimaPayAddress: removeTrailingSlash(initialRef.current.YimaPayAddress),
+      YimaMerchantId: initialRef.current.YimaMerchantId.trim(),
+      YimaMerchantKey: initialRef.current.YimaMerchantKey.trim(),
+      YimaNotifyUrl: removeTrailingSlash(initialRef.current.YimaNotifyUrl),
+      YimaReturnUrl: removeTrailingSlash(initialRef.current.YimaReturnUrl),
+      YimaSubscriptionReturnUrl: removeTrailingSlash(
+        initialRef.current.YimaSubscriptionReturnUrl
+      ),
+      YimaMinTopUp: initialRef.current.YimaMinTopUp,
       CustomCallbackAddress: removeTrailingSlash(
         initialRef.current.CustomCallbackAddress
       ),
@@ -277,6 +321,47 @@ export function PaymentSettingsSection({
         key: 'CustomCallbackAddress',
         value: sanitized.CustomCallbackAddress,
       })
+    }
+
+    if (sanitized.YimaEnabled !== initial.YimaEnabled) {
+      updates.push({ key: 'YimaEnabled', value: String(sanitized.YimaEnabled) })
+    }
+
+    if (sanitized.YimaPayAddress !== initial.YimaPayAddress) {
+      updates.push({ key: 'YimaPayAddress', value: sanitized.YimaPayAddress })
+    }
+
+    if (sanitized.YimaMerchantId !== initial.YimaMerchantId) {
+      updates.push({ key: 'YimaMerchantId', value: sanitized.YimaMerchantId })
+    }
+
+    if (
+      sanitized.YimaMerchantKey &&
+      sanitized.YimaMerchantKey !== initial.YimaMerchantKey
+    ) {
+      updates.push({ key: 'YimaMerchantKey', value: sanitized.YimaMerchantKey })
+    }
+
+    if (sanitized.YimaNotifyUrl !== initial.YimaNotifyUrl) {
+      updates.push({ key: 'YimaNotifyUrl', value: sanitized.YimaNotifyUrl })
+    }
+
+    if (sanitized.YimaReturnUrl !== initial.YimaReturnUrl) {
+      updates.push({ key: 'YimaReturnUrl', value: sanitized.YimaReturnUrl })
+    }
+
+    if (
+      sanitized.YimaSubscriptionReturnUrl !==
+      initial.YimaSubscriptionReturnUrl
+    ) {
+      updates.push({
+        key: 'YimaSubscriptionReturnUrl',
+        value: sanitized.YimaSubscriptionReturnUrl,
+      })
+    }
+
+    if (sanitized.YimaMinTopUp !== initial.YimaMinTopUp) {
+      updates.push({ key: 'YimaMinTopUp', value: String(sanitized.YimaMinTopUp) })
     }
 
     if (updates.length === 0) {
@@ -420,6 +505,16 @@ export function PaymentSettingsSection({
       PayAddress: removeTrailingSlash(values.PayAddress),
       EpayId: values.EpayId.trim(),
       EpayKey: values.EpayKey.trim(),
+      YimaEnabled: values.YimaEnabled,
+      YimaPayAddress: removeTrailingSlash(values.YimaPayAddress),
+      YimaMerchantId: values.YimaMerchantId.trim(),
+      YimaMerchantKey: values.YimaMerchantKey.trim(),
+      YimaNotifyUrl: removeTrailingSlash(values.YimaNotifyUrl),
+      YimaReturnUrl: removeTrailingSlash(values.YimaReturnUrl),
+      YimaSubscriptionReturnUrl: removeTrailingSlash(
+        values.YimaSubscriptionReturnUrl
+      ),
+      YimaMinTopUp: values.YimaMinTopUp,
       Price: values.Price,
       MinTopUp: values.MinTopUp,
       CustomCallbackAddress: removeTrailingSlash(values.CustomCallbackAddress),
@@ -438,6 +533,16 @@ export function PaymentSettingsSection({
       PayAddress: removeTrailingSlash(initialRef.current.PayAddress),
       EpayId: initialRef.current.EpayId.trim(),
       EpayKey: initialRef.current.EpayKey.trim(),
+      YimaEnabled: initialRef.current.YimaEnabled,
+      YimaPayAddress: removeTrailingSlash(initialRef.current.YimaPayAddress),
+      YimaMerchantId: initialRef.current.YimaMerchantId.trim(),
+      YimaMerchantKey: initialRef.current.YimaMerchantKey.trim(),
+      YimaNotifyUrl: removeTrailingSlash(initialRef.current.YimaNotifyUrl),
+      YimaReturnUrl: removeTrailingSlash(initialRef.current.YimaReturnUrl),
+      YimaSubscriptionReturnUrl: removeTrailingSlash(
+        initialRef.current.YimaSubscriptionReturnUrl
+      ),
+      YimaMinTopUp: initialRef.current.YimaMinTopUp,
       Price: initialRef.current.Price,
       MinTopUp: initialRef.current.MinTopUp,
       CustomCallbackAddress: removeTrailingSlash(
@@ -467,6 +572,47 @@ export function PaymentSettingsSection({
 
     if (sanitized.EpayKey && sanitized.EpayKey !== initial.EpayKey) {
       updates.push({ key: 'EpayKey', value: sanitized.EpayKey })
+    }
+
+    if (sanitized.YimaEnabled !== initial.YimaEnabled) {
+      updates.push({ key: 'YimaEnabled', value: sanitized.YimaEnabled })
+    }
+
+    if (sanitized.YimaPayAddress !== initial.YimaPayAddress) {
+      updates.push({ key: 'YimaPayAddress', value: sanitized.YimaPayAddress })
+    }
+
+    if (sanitized.YimaMerchantId !== initial.YimaMerchantId) {
+      updates.push({ key: 'YimaMerchantId', value: sanitized.YimaMerchantId })
+    }
+
+    if (
+      sanitized.YimaMerchantKey &&
+      sanitized.YimaMerchantKey !== initial.YimaMerchantKey
+    ) {
+      updates.push({ key: 'YimaMerchantKey', value: sanitized.YimaMerchantKey })
+    }
+
+    if (sanitized.YimaNotifyUrl !== initial.YimaNotifyUrl) {
+      updates.push({ key: 'YimaNotifyUrl', value: sanitized.YimaNotifyUrl })
+    }
+
+    if (sanitized.YimaReturnUrl !== initial.YimaReturnUrl) {
+      updates.push({ key: 'YimaReturnUrl', value: sanitized.YimaReturnUrl })
+    }
+
+    if (
+      sanitized.YimaSubscriptionReturnUrl !==
+      initial.YimaSubscriptionReturnUrl
+    ) {
+      updates.push({
+        key: 'YimaSubscriptionReturnUrl',
+        value: sanitized.YimaSubscriptionReturnUrl,
+      })
+    }
+
+    if (sanitized.YimaMinTopUp !== initial.YimaMinTopUp) {
+      updates.push({ key: 'YimaMinTopUp', value: sanitized.YimaMinTopUp })
     }
 
     if (sanitized.Price !== initial.Price) {

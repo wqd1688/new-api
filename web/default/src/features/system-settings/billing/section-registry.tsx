@@ -21,6 +21,7 @@ import { CheckinSettingsSection } from '../general/checkin-settings-section'
 import { PricingSection } from '../general/pricing-section'
 import { QuotaSettingsSection } from '../general/quota-settings-section'
 import { PaymentSettingsSection } from '../integrations/payment-settings-section'
+import { YimaSettingsSection } from '../integrations/yima-settings-section'
 import { RatioSettingsCard } from '../models/ratio-settings-card'
 import type { BillingSettings } from '../types'
 import { createSectionRegistry } from '../utils/section-registry'
@@ -138,6 +139,14 @@ const BILLING_SECTIONS = [
           PayAddress: settings.PayAddress,
           EpayId: settings.EpayId,
           EpayKey: settings.EpayKey,
+          YimaEnabled: settings.YimaEnabled,
+          YimaPayAddress: settings.YimaPayAddress,
+          YimaMerchantId: settings.YimaMerchantId,
+          YimaMerchantKey: settings.YimaMerchantKey,
+          YimaNotifyUrl: settings.YimaNotifyUrl,
+          YimaReturnUrl: settings.YimaReturnUrl,
+          YimaSubscriptionReturnUrl: settings.YimaSubscriptionReturnUrl,
+          YimaMinTopUp: settings.YimaMinTopUp,
           Price: settings.Price,
           MinTopUp: settings.MinTopUp,
           CustomCallbackAddress: settings.CustomCallbackAddress,
@@ -186,6 +195,29 @@ const BILLING_SECTIONS = [
           WaffoPancakeCurrency: settings.WaffoPancakeCurrency ?? 'USD',
           WaffoPancakeUnitPrice: settings.WaffoPancakeUnitPrice ?? 1,
           WaffoPancakeMinTopUp: settings.WaffoPancakeMinTopUp ?? 1,
+        }}
+      />
+    ),
+  },
+  {
+    id: 'yima',
+    titleKey: 'Yima Gateway',
+    descriptionKey: 'Configuration for Yima merchant OpenAPI integration',
+    build: (settings: BillingSettings) => (
+      <YimaSettingsSection
+        defaultValues={{
+          YimaEnabled: settings.YimaEnabled,
+          YimaPayAddress: settings.YimaPayAddress,
+          YimaMerchantId: settings.YimaMerchantId,
+          YimaMerchantKey: settings.YimaMerchantKey,
+          YimaNotifyUrl: settings.YimaNotifyUrl,
+          YimaReturnUrl: settings.YimaReturnUrl,
+          YimaSubscriptionReturnUrl: settings.YimaSubscriptionReturnUrl,
+          YimaAlipayEnabled: settings.YimaAlipayEnabled,
+          YimaAlipayName: settings.YimaAlipayName,
+          YimaWechatEnabled: settings.YimaWechatEnabled,
+          YimaWechatName: settings.YimaWechatName,
+          YimaMinTopUp: settings.YimaMinTopUp,
         }}
       />
     ),

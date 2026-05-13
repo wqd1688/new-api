@@ -77,6 +77,18 @@ func InitOptionMap() {
 	common.OptionMap["CustomCallbackAddress"] = ""
 	common.OptionMap["EpayId"] = ""
 	common.OptionMap["EpayKey"] = ""
+	common.OptionMap["YimaEnabled"] = strconv.FormatBool(setting.YimaEnabled)
+	common.OptionMap["YimaPayAddress"] = setting.YimaPayAddress
+	common.OptionMap["YimaMerchantId"] = setting.YimaMerchantId
+	common.OptionMap["YimaMerchantKey"] = setting.YimaMerchantKey
+	common.OptionMap["YimaNotifyUrl"] = setting.YimaNotifyUrl
+	common.OptionMap["YimaReturnUrl"] = setting.YimaReturnUrl
+	common.OptionMap["YimaSubscriptionReturnUrl"] = setting.YimaSubscriptionReturnUrl
+	common.OptionMap["YimaAlipayEnabled"] = strconv.FormatBool(setting.YimaAlipayEnabled)
+	common.OptionMap["YimaAlipayName"] = setting.YimaAlipayName
+	common.OptionMap["YimaWechatEnabled"] = strconv.FormatBool(setting.YimaWechatEnabled)
+	common.OptionMap["YimaWechatName"] = setting.YimaWechatName
+	common.OptionMap["YimaMinTopUp"] = strconv.Itoa(setting.YimaMinTopUp)
 	common.OptionMap["Price"] = strconv.FormatFloat(operation_setting.Price, 'f', -1, 64)
 	common.OptionMap["USDExchangeRate"] = strconv.FormatFloat(operation_setting.USDExchangeRate, 'f', -1, 64)
 	common.OptionMap["MinTopUp"] = strconv.Itoa(operation_setting.MinTopUp)
@@ -207,6 +219,7 @@ func SyncOptions(frequency int) {
 }
 
 func UpdateOption(key string, value string) error {
+	value = normalizeOptionValue(value)
 	// Save to database first
 	option := Option{
 		Key: key,
@@ -222,7 +235,16 @@ func UpdateOption(key string, value string) error {
 	return updateOptionMap(key, value)
 }
 
+func normalizeOptionValue(value string) string {
+	trimmed := strings.TrimSpace(value)
+	if trimmed == "<nil>" {
+		return ""
+	}
+	return value
+}
+
 func updateOptionMap(key string, value string) (err error) {
+	value = normalizeOptionValue(value)
 	common.OptionMapRWMutex.Lock()
 	defer common.OptionMapRWMutex.Unlock()
 	common.OptionMap[key] = value
@@ -363,6 +385,30 @@ func updateOptionMap(key string, value string) (err error) {
 		operation_setting.EpayId = value
 	case "EpayKey":
 		operation_setting.EpayKey = value
+	case "YimaEnabled":
+		setting.YimaEnabled = value == "true"
+	case "YimaPayAddress":
+		setting.YimaPayAddress = value
+	case "YimaMerchantId":
+		setting.YimaMerchantId = value
+	case "YimaMerchantKey":
+		setting.YimaMerchantKey = value
+	case "YimaNotifyUrl":
+		setting.YimaNotifyUrl = value
+	case "YimaReturnUrl":
+		setting.YimaReturnUrl = value
+	case "YimaSubscriptionReturnUrl":
+		setting.YimaSubscriptionReturnUrl = value
+	case "YimaAlipayEnabled":
+		setting.YimaAlipayEnabled = value == "true"
+	case "YimaAlipayName":
+		setting.YimaAlipayName = value
+	case "YimaWechatEnabled":
+		setting.YimaWechatEnabled = value == "true"
+	case "YimaWechatName":
+		setting.YimaWechatName = value
+	case "YimaMinTopUp":
+		setting.YimaMinTopUp, _ = strconv.Atoi(value)
 	case "Price":
 		operation_setting.Price, _ = strconv.ParseFloat(value, 64)
 	case "USDExchangeRate":

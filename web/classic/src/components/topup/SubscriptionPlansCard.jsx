@@ -181,7 +181,11 @@ const SubscriptionPlansCard = ({
         payment_method: selectedEpayMethod,
       });
       if (res.data?.message === 'success') {
-        submitEpayForm({ url: res.data.url, params: res.data.data });
+        if (res.data?.data?.payment_url) {
+          window.open(res.data.data.payment_url, '_blank');
+        } else {
+          submitEpayForm({ url: res.data.url, params: res.data.data });
+        }
         showSuccess(t('已发起支付'));
         closeBuy();
       } else {

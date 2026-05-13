@@ -85,6 +85,24 @@ func isWaffoPancakeWebhookEnabled() bool {
 	return isWaffoPancakeTopUpEnabled()
 }
 
+func isYimaTopUpEnabled() bool {
+	if !setting.YimaEnabled {
+		return false
+	}
+
+	return isYimaWebhookConfigured() && len(getEnabledYimaMethodTypes()) > 0
+}
+
+func isYimaWebhookConfigured() bool {
+	return strings.TrimSpace(setting.YimaPayAddress) != "" &&
+		strings.TrimSpace(setting.YimaMerchantId) != "" &&
+		strings.TrimSpace(setting.YimaMerchantKey) != ""
+}
+
+func isYimaWebhookEnabled() bool {
+	return isYimaTopUpEnabled()
+}
+
 func isEpayTopUpEnabled() bool {
 	return isEpayWebhookConfigured() && len(operation_setting.PayMethods) > 0
 }

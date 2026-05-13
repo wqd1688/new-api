@@ -21,6 +21,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, Spin, Tabs } from '@douyinfe/semi-ui';
 import SettingsGeneralPayment from '../../pages/Setting/Payment/SettingsGeneralPayment';
 import SettingsPaymentGateway from '../../pages/Setting/Payment/SettingsPaymentGateway';
+import SettingsPaymentGatewayYima from '../../pages/Setting/Payment/SettingsPaymentGatewayYima';
 import SettingsPaymentGatewayStripe from '../../pages/Setting/Payment/SettingsPaymentGatewayStripe';
 import SettingsPaymentGatewayCreem from '../../pages/Setting/Payment/SettingsPaymentGatewayCreem';
 import SettingsPaymentGatewayWaffo from '../../pages/Setting/Payment/SettingsPaymentGatewayWaffo';
@@ -35,6 +36,18 @@ const PaymentSetting = () => {
     PayAddress: '',
     EpayId: '',
     EpayKey: '',
+    YimaEnabled: false,
+    YimaPayAddress: '',
+    YimaMerchantId: '',
+    YimaMerchantKey: '',
+    YimaNotifyUrl: '',
+    YimaReturnUrl: '',
+    YimaSubscriptionReturnUrl: '',
+    YimaAlipayEnabled: true,
+    YimaAlipayName: '支付宝 (倚码)',
+    YimaWechatEnabled: true,
+    YimaWechatName: '微信 (倚码)',
+    YimaMinTopUp: 1,
     Price: 7.3,
     MinTopUp: 1,
     TopupGroupRatio: '',
@@ -172,6 +185,13 @@ const PaymentSetting = () => {
             </Tabs.TabPane>
             <Tabs.TabPane tab={t('易支付设置')} itemKey='epay'>
               <SettingsPaymentGateway
+                options={inputs}
+                refresh={onRefresh}
+                hideSectionTitle
+              />
+            </Tabs.TabPane>
+            <Tabs.TabPane tab={t('倚码设置')} itemKey='yima'>
+              <SettingsPaymentGatewayYima
                 options={inputs}
                 refresh={onRefresh}
                 hideSectionTitle

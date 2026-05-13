@@ -129,6 +129,8 @@ func UpdateOption(c *gin.Context) {
 		option.Value = common.Interface2String(option.Value.(float64))
 	case int:
 		option.Value = common.Interface2String(option.Value.(int))
+	case nil:
+		option.Value = ""
 	default:
 		option.Value = fmt.Sprintf("%v", option.Value)
 	}

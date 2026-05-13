@@ -293,6 +293,8 @@ const TopUp = () => {
           if (payWay === 'stripe') {
             // Stripe 支付回调处理
             window.open(data.pay_link, '_blank');
+          } else if (data?.payment_url) {
+            window.open(data.payment_url, '_blank');
           } else {
             // 普通支付表单提交
             let params = data;

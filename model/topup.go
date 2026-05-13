@@ -29,6 +29,8 @@ const (
 	PaymentMethodCreem        = "creem"
 	PaymentMethodWaffo        = "waffo"
 	PaymentMethodWaffoPancake = "waffo_pancake"
+	PaymentMethodYimaAlipay   = "yima_alipay"
+	PaymentMethodYimaWechat   = "yima_wechat"
 )
 
 const (
@@ -37,6 +39,7 @@ const (
 	PaymentProviderCreem        = "creem"
 	PaymentProviderWaffo        = "waffo"
 	PaymentProviderWaffoPancake = "waffo_pancake"
+	PaymentProviderYima         = "yima"
 )
 
 var (

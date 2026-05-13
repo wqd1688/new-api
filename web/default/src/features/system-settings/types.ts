@@ -209,6 +209,18 @@ export type BillingSettings = {
   PayAddress: string
   EpayId: string
   EpayKey: string
+  YimaEnabled: boolean
+  YimaPayAddress: string
+  YimaMerchantId: string
+  YimaMerchantKey: string
+  YimaNotifyUrl: string
+  YimaReturnUrl: string
+  YimaSubscriptionReturnUrl: string
+  YimaAlipayEnabled: boolean
+  YimaAlipayName: string
+  YimaWechatEnabled: boolean
+  YimaWechatName: string
+  YimaMinTopUp: number
   Price: number
   MinTopUp: number
   CustomCallbackAddress: string

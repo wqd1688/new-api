@@ -22,8 +22,11 @@ import (
 )
 
 func GetTopUpInfo(c *gin.Context) {
-	// 获取支付方式
-	payMethods := operation_setting.PayMethods
+	epayEnabled := isEpayTopUpEnabled()
+	payMethods := make([]map[string]string, 0, len(operation_setting.PayMethods)+4)
+	if epayEnabled {
+		payMethods = append(payMethods, operation_setting.PayMethods...)
+	}
 
 	// 如果启用了 Stripe 支付，添加到支付方法列表
 	if isStripeTopUpEnabled() {
@@ -89,12 +92,42 @@ func GetTopUpInfo(c *gin.Context) {
 		}
 	}
 
+	enableYima := isYimaTopUpEnabled()
+	if enableYima {
+		yimaMethods := make([]map[string]string, 0, len(getEnabledYimaMethodTypes()))
+		for _, methodType := range getEnabledYimaMethodTypes() {
+			color := "rgba(var(--semi-blue-5), 1)"
+			if methodType == model.PaymentMethodYimaWechat {
+				color = "rgba(var(--semi-green-5), 1)"
+			}
+			yimaMethods = append(yimaMethods, map[string]string{
+				"name":      getYimaMethodName(methodType),
+				"type":      methodType,
+				"color":     color,
+				"min_topup": strconv.Itoa(setting.YimaMinTopUp),
+			})
+		}
+		for _, yimaMethod := range yimaMethods {
+			hasMethod := false
+			for _, method := range payMethods {
+				if method["type"] == yimaMethod["type"] {
+					hasMethod = true
+					break
+				}
+			}
+			if !hasMethod {
+				payMethods = append(payMethods, yimaMethod)
+			}
+		}
+	}
+
 	data := gin.H{
-		"enable_online_topup":        isEpayTopUpEnabled(),
+		"enable_online_topup":        epayEnabled || enableYima,
 		"enable_stripe_topup":        isStripeTopUpEnabled(),
 		"enable_creem_topup":         isCreemTopUpEnabled(),
 		"enable_waffo_topup":         enableWaffo,
 		"enable_waffo_pancake_topup": enableWaffoPancake,
+		"enable_yima_topup":          enableYima,
 		"waffo_pay_methods": func() interface{} {
 			if enableWaffo {
 				return setting.GetWaffoPayMethods()
@@ -107,6 +140,7 @@ func GetTopUpInfo(c *gin.Context) {
 		"stripe_min_topup":        setting.StripeMinTopUp,
 		"waffo_min_topup":         setting.WaffoMinTopUp,
 		"waffo_pancake_min_topup": setting.WaffoPancakeMinTopUp,
+		"yima_min_topup":          setting.YimaMinTopUp,
 		"amount_options":          operation_setting.GetPaymentSetting().AmountOptions,
 		"discount":                operation_setting.GetPaymentSetting().AmountDiscount,
 		"topup_link":              common.TopUpLink,
@@ -198,6 +232,11 @@ func RequestEpay(c *gin.Context) {
 	payMoney := getPayMoney(req.Amount, group)
 	if payMoney < 0.01 {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "充值金额过低"})
+		return
+	}
+
+	if isYimaPaymentMethod(req.PaymentMethod) {
+		requestYimaTopUp(c, id, req.Amount, req.PaymentMethod, payMoney)
 		return
 	}
 

@@ -240,6 +240,18 @@ CRYPTO_SECRET=replace-with-another-random-string
 2. 开启 Redis 时必须同时配置 `CRYPTO_SECRET`
 3. 如果使用 MySQL，`SQL_DSN` 的开头不要写成 `local:`，否则当前项目会把它识别成 SQLite
 4. `LOG_SQL_DSN` 不配置时，日志表默认仍写入主数据库
+5. 如果配置了 `LOG_SQL_DSN`，程序启动时会强制连接日志库；一旦账号、密码、权限或库名不正确，服务会直接启动失败，不会自动回退到主数据库
+
+如果你暂时不需要“日志单独落库”，最稳妥的做法就是不要配置 `LOG_SQL_DSN`。
+
+例如下面这种最小可用配置即可：
+
+```env
+SESSION_SECRET=replace-with-a-random-string
+SQL_DSN=newapi_app:12345678@tcp(127.0.0.1:3306)/newapi?charset=utf8mb4&parseTime=true&loc=Local
+PORT=3000
+GIN_MODE=release
+```
 
 ***
 
@@ -371,7 +383,49 @@ sudo systemctl reload nginx
 
 检查 `SQL_DSN` 是否以 `local` 开头。这个项目里，`SQL_DSN` 只要以 `local` 开头，就会走 SQLite 分支。
 
-### 4. 如何确认当前服务是否真的起来了？
+### 4. systemd 日志里出现 `Access denied for user 'xxx'@'localhost'` 怎么办？
+
+先看报错对应的是 `SQL_DSN` 还是 `LOG_SQL_DSN`。
+
+如果像下面这样：
+
+```text
+failed to initialize database, got error Error 1045 (28000): Access denied for user 'newapi_log'@'localhost'
+```
+
+通常说明你配置了 `LOG_SQL_DSN`，但日志库账号没有权限、密码不对，或者数据库不存在。
+
+处理方式：
+
+1. 如果你不需要单独日志库，直接删除或注释掉 `.env` 里的 `LOG_SQL_DSN`，然后重启服务
+2. 如果你确实需要单独日志库，先在服务器上手动验证该连接串对应的账号能否登录
+3. 确认该账号对目标日志库有建表和读写权限
+4. 改完后执行 `sudo systemctl restart new-api`
+
+MySQL 常见检查命令示例：
+
+```bash
+mysql -u newapi_log -p -h 127.0.0.1
+```
+
+如果需要单独创建日志库用户，可以参考：
+
+```sql
+CREATE DATABASE newapi_log DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'newapi_log'@'localhost' IDENTIFIED BY 'replace-with-strong-password';
+GRANT ALL PRIVILEGES ON newapi_log.* TO 'newapi_log'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+如果你的 DSN 使用的是 `127.0.0.1`，但 MySQL 权限是按 host 区分的，也可以同时补一条：
+
+```sql
+CREATE USER 'newapi_log'@'127.0.0.1' IDENTIFIED BY 'replace-with-strong-password';
+GRANT ALL PRIVILEGES ON newapi_log.* TO 'newapi_log'@'127.0.0.1';
+FLUSH PRIVILEGES;
+```
+
+### 5. 如何确认当前服务是否真的起来了？
 
 优先看下面三个地方：
 
@@ -379,7 +433,7 @@ sudo systemctl reload nginx
 2. `journalctl -u new-api -f`
 3. `curl -I http://127.0.0.1:3000`
 
-### 5. 回滚怎么做？
+### 6. 回滚怎么做？
 
 把 `/opt/new-api/current` 软链接切回旧版本目录，然后执行：
 

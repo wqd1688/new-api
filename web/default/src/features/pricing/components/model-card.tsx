@@ -41,6 +41,7 @@ export interface ModelCardProps {
   usdExchangeRate?: number
   tokenUnit?: TokenUnit
   showRechargePrice?: boolean
+  forceBillingCurrency?: boolean
   perf?: ModelPerfBadgeData
 }
 
@@ -51,6 +52,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   const priceRate = props.priceRate ?? 1
   const usdExchangeRate = props.usdExchangeRate ?? 1
   const showRechargePrice = props.showRechargePrice ?? false
+  const forceBillingCurrency = props.forceBillingCurrency ?? false
   const isTokenBased = isTokenBasedModel(props.model)
   const tokenUnitLabel = tokenUnit === 'K' ? '1K' : '1M'
   const tags = parseTags(props.model.tags)
@@ -149,7 +151,8 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                         tokenUnit,
                         showRechargePrice,
                         priceRate,
-                        usdExchangeRate
+                        usdExchangeRate,
+                        forceBillingCurrency
                       )}
                     </span>
                     /{tokenUnitLabel}
@@ -163,7 +166,8 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                         tokenUnit,
                         showRechargePrice,
                         priceRate,
-                        usdExchangeRate
+                        usdExchangeRate,
+                        forceBillingCurrency
                       )}
                     </span>
                     /{tokenUnitLabel}
@@ -178,7 +182,8 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                           tokenUnit,
                           showRechargePrice,
                           priceRate,
-                          usdExchangeRate
+                          usdExchangeRate,
+                          forceBillingCurrency
                         )}
                       </span>
                     </span>
@@ -191,7 +196,8 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                       props.model,
                       showRechargePrice,
                       priceRate,
-                      usdExchangeRate
+                      usdExchangeRate,
+                      forceBillingCurrency
                     )}
                   </span>{' '}
                   / {t('request')}

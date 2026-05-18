@@ -16,7 +16,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { formatCurrencyFromUSD } from '@/lib/currency'
+import {
+  formatBillingCurrencyFromUSD,
+  formatCurrencyFromUSD,
+} from '@/lib/currency'
 import { QUOTA_TYPE_VALUES, TOKEN_UNIT_DIVISORS } from '../constants'
 import type { PricingModel, TokenUnit, PriceType } from '../types'
 
@@ -157,6 +160,21 @@ function applyRechargeRate(
   return (price * priceRate) / usdExchangeRate
 }
 
+function formatModelPriceCurrency(
+  priceUSD: number,
+  useBillingCurrency: boolean,
+  options: {
+    digitsLarge: number
+    digitsSmall: number
+    abbreviate: boolean
+  }
+): string {
+  const formatter = useBillingCurrency
+    ? formatBillingCurrencyFromUSD
+    : formatCurrencyFromUSD
+  return formatter(priceUSD, options)
+}
+
 /**
  * Format token-based price for display
  */
@@ -166,7 +184,8 @@ export function formatPrice(
   tokenUnit: TokenUnit,
   showWithRecharge = false,
   priceRate = 1,
-  usdExchangeRate = 1
+  usdExchangeRate = 1,
+  useBillingCurrency = false
 ): string {
   if (model.quota_type === QUOTA_TYPE_VALUES.REQUEST) {
     return '-'
@@ -187,7 +206,7 @@ export function formatPrice(
   )
 
   const price = priceInUSD / TOKEN_UNIT_DIVISORS[tokenUnit]
-  return formatCurrencyFromUSD(price, {
+  return formatModelPriceCurrency(price, useBillingCurrency, {
     digitsLarge: 4,
     digitsSmall: 6,
     abbreviate: false,
@@ -268,7 +287,8 @@ export function formatRequestPrice(
   model: PricingModel,
   showWithRecharge = false,
   priceRate = 1,
-  usdExchangeRate = 1
+  usdExchangeRate = 1,
+  useBillingCurrency = false
 ): string {
   if (model.quota_type !== QUOTA_TYPE_VALUES.REQUEST) {
     return '-'
@@ -289,7 +309,7 @@ export function formatRequestPrice(
     usdExchangeRate
   )
 
-  return formatCurrencyFromUSD(priceInUSD, {
+  return formatModelPriceCurrency(priceInUSD, useBillingCurrency, {
     digitsLarge: 4,
     digitsSmall: 4,
     abbreviate: false,

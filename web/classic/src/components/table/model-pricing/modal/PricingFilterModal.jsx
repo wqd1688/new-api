@@ -23,8 +23,20 @@ import { resetPricingFilters } from '../../../../helpers/utils';
 import FilterModalContent from './components/FilterModalContent';
 import FilterModalFooter from './components/FilterModalFooter';
 
-const PricingFilterModal = ({ visible, onClose, sidebarProps, t }) => {
-  const handleResetFilters = () =>
+const PricingFilterModal = ({
+  visible,
+  onClose,
+  sidebarProps,
+  modelListMode = false,
+  t,
+}) => {
+  const handleResetFilters = () => {
+    if (modelListMode) {
+      sidebarProps.setFilterVendor?.('all');
+      sidebarProps.setCurrentPage?.(1);
+      return;
+    }
+
     resetPricingFilters({
       handleChange: sidebarProps.handleChange,
       setShowWithRecharge: sidebarProps.setShowWithRecharge,
@@ -39,6 +51,7 @@ const PricingFilterModal = ({ visible, onClose, sidebarProps, t }) => {
       setCurrentPage: sidebarProps.setCurrentPage,
       setTokenUnit: sidebarProps.setTokenUnit,
     });
+  };
 
   const footer = (
     <FilterModalFooter onReset={handleResetFilters} onConfirm={onClose} t={t} />
@@ -59,7 +72,11 @@ const PricingFilterModal = ({ visible, onClose, sidebarProps, t }) => {
         msOverflowStyle: 'none',
       }}
     >
-      <FilterModalContent sidebarProps={sidebarProps} t={t} />
+      <FilterModalContent
+        sidebarProps={sidebarProps}
+        modelListMode={modelListMode}
+        t={t}
+      />
     </Modal>
   );
 };

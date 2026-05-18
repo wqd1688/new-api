@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2025 QuantumNous
+Copyright (C) 2023-2026 QuantumNous
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -16,17 +16,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import z from 'zod'
+import { createFileRoute } from '@tanstack/react-router'
+import { PublicModels } from '@/features/model-square'
 
-import React from 'react';
-import PricingTable from '../../view/table/PricingTable';
-import PricingCardView from '../../view/card/PricingCardView';
+const modelsSearchSchema = z.object({
+  search: z.string().optional(),
+  sort: z.string().optional(),
+  vendor: z.string().optional(),
+})
 
-const PricingView = ({ viewMode = 'table', modelListMode = false, ...props }) => {
-  return modelListMode || viewMode === 'card' ? (
-    <PricingCardView {...props} modelListMode={modelListMode} />
-  ) : (
-    <PricingTable {...props} />
-  );
-};
-
-export default PricingView;
+export const Route = createFileRoute('/models/')({
+  validateSearch: modelsSearchSchema,
+  component: PublicModels,
+})

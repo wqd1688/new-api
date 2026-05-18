@@ -42,6 +42,7 @@ const PricingContent = ({ isMobile, sidebarProps, ...props }) => {
           setViewMode={sidebarProps.setViewMode}
           tokenUnit={sidebarProps.tokenUnit}
           setTokenUnit={sidebarProps.setTokenUnit}
+          modelListMode={sidebarProps.modelListMode}
         />
       </div>
 
@@ -51,7 +52,11 @@ const PricingContent = ({ isMobile, sidebarProps, ...props }) => {
           isMobile ? 'pricing-view-container-mobile' : 'pricing-view-container'
         }
       >
-        <PricingView {...props} viewMode={sidebarProps.viewMode} />
+        <PricingView
+          {...props}
+          viewMode={sidebarProps.modelListMode ? 'card' : sidebarProps.viewMode}
+          modelListMode={sidebarProps.modelListMode}
+        />
       </div>
     </div>
   );

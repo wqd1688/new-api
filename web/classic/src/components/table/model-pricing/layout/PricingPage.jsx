@@ -25,25 +25,34 @@ import ModelDetailSideSheet from '../modal/ModelDetailSideSheet';
 import { useModelPricingData } from '../../../../hooks/model-pricing/useModelPricingData';
 import { useIsMobile } from '../../../../hooks/common/useIsMobile';
 
-const PricingPage = () => {
+const PricingPage = ({ modelListMode = false }) => {
   const pricingData = useModelPricingData();
   const { Sider, Content } = Layout;
   const isMobile = useIsMobile();
   const [showRatio, setShowRatio] = React.useState(false);
   const [viewMode, setViewMode] = React.useState('card');
+  const siteDisplayType =
+    modelListMode && pricingData.siteDisplayType === 'TOKENS'
+      ? 'USD'
+      : pricingData.siteDisplayType;
   const allProps = {
     ...pricingData,
-    showRatio,
+    siteDisplayType,
+    showWithRecharge: modelListMode ? false : pricingData.showWithRecharge,
+    showRatio: modelListMode ? false : showRatio,
     setShowRatio,
-    viewMode,
+    viewMode: modelListMode ? 'card' : viewMode,
     setViewMode,
+    modelListMode,
   };
 
   return (
     <div className='bg-white'>
       <Layout className='pricing-layout'>
         {!isMobile && (
-          <Sider className='pricing-scroll-hide pricing-sidebar'>
+          <Sider
+            className={`pricing-scroll-hide pricing-sidebar ${modelListMode ? 'models-sidebar' : ''}`}
+          >
             <PricingSidebar {...allProps} />
           </Sider>
         )}

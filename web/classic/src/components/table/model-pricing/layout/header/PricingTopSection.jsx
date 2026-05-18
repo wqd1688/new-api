@@ -47,6 +47,7 @@ const PricingTopSection = memo(
     setViewMode,
     tokenUnit,
     setTokenUnit,
+    modelListMode,
     t,
   }) => {
     const [showFilterModal, setShowFilterModal] = useState(false);
@@ -76,6 +77,7 @@ const PricingTopSection = memo(
                 setViewMode={setViewMode}
                 tokenUnit={tokenUnit}
                 setTokenUnit={setTokenUnit}
+                modelListMode={modelListMode}
                 t={t}
               />
             </div>
@@ -83,6 +85,7 @@ const PricingTopSection = memo(
               visible={showFilterModal}
               onClose={() => setShowFilterModal(false)}
               sidebarProps={sidebarProps}
+              modelListMode={modelListMode}
               t={t}
             />
           </>
@@ -112,6 +115,7 @@ const PricingTopSection = memo(
             setViewMode={setViewMode}
             tokenUnit={tokenUnit}
             setTokenUnit={setTokenUnit}
+            modelListMode={modelListMode}
           />
         )}
       </>

@@ -25,8 +25,71 @@ import PricingEndpointTypes from '../filter/PricingEndpointTypes';
 import PricingVendors from '../filter/PricingVendors';
 import PricingTags from '../filter/PricingTags';
 
+import { getLobeHubIcon } from '../../../../helpers';
 import { resetPricingFilters } from '../../../../helpers/utils';
 import { usePricingFilterCounts } from '../../../../hooks/model-pricing/usePricingFilterCounts';
+
+const ModelsVendorList = ({ filterVendor, setFilterVendor, models = [], t }) => {
+  const vendors = React.useMemo(() => {
+    const vendorMap = new Map();
+    let hasUnknownVendor = false;
+
+    models.forEach((model) => {
+      if (model.vendor_name) {
+        if (!vendorMap.has(model.vendor_name)) {
+          vendorMap.set(model.vendor_name, {
+            name: model.vendor_name,
+            icon: model.vendor_icon,
+          });
+        }
+      } else {
+        hasUnknownVendor = true;
+      }
+    });
+
+    const vendorList = Array.from(vendorMap.values()).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
+
+    if (hasUnknownVendor) {
+      vendorList.push({ name: 'unknown', icon: null, label: t('未知供应商') });
+    }
+
+    return vendorList;
+  }, [models, t]);
+
+  const handleSelectVendor = (vendorName) => {
+    setFilterVendor(filterVendor === vendorName ? 'all' : vendorName);
+  };
+
+  return (
+    <div className='models-vendor-filter'>
+      <div className='models-filter-title'>{t('筛选')}</div>
+      <div className='models-filter-subtitle'>{t('系列 / 厂商')}</div>
+      <div className='models-vendor-list'>
+        {vendors.map((vendor) => {
+          const isActive = filterVendor === vendor.name;
+          const label = vendor.label || vendor.name;
+
+          return (
+            <button
+              type='button'
+              key={vendor.name}
+              className={`models-vendor-item ${isActive ? 'active' : ''}`}
+              onClick={() => handleSelectVendor(vendor.name)}
+              title={label}
+            >
+              <span className='models-vendor-icon'>
+                {vendor.icon ? getLobeHubIcon(vendor.icon, 22) : label.charAt(0)}
+              </span>
+              <span className='models-vendor-name'>{label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 const PricingSidebar = ({
   showWithRecharge,
@@ -55,6 +118,7 @@ const PricingSidebar = ({
   tokenUnit,
   setTokenUnit,
   loading,
+  modelListMode = false,
   t,
   ...categoryProps
 }) => {
@@ -74,7 +138,13 @@ const PricingSidebar = ({
     searchValue: categoryProps.searchValue,
   });
 
-  const handleResetFilters = () =>
+  const handleResetFilters = () => {
+    if (modelListMode) {
+      setFilterVendor?.('all');
+      setCurrentPage?.(1);
+      return;
+    }
+
     resetPricingFilters({
       handleChange,
       setShowWithRecharge,
@@ -89,9 +159,19 @@ const PricingSidebar = ({
       setCurrentPage,
       setTokenUnit,
     });
+  };
 
   return (
     <div className='p-2'>
+      {modelListMode ? (
+        <ModelsVendorList
+          filterVendor={filterVendor}
+          setFilterVendor={setFilterVendor}
+          models={categoryProps.models}
+          t={t}
+        />
+      ) : (
+        <>
       <div className='flex items-center justify-between mb-6'>
         <div className='text-lg font-semibold text-gray-800'>{t('筛选')}</div>
         <Button
@@ -113,41 +193,43 @@ const PricingSidebar = ({
         t={t}
       />
 
-      <PricingGroups
-        filterGroup={filterGroup}
-        setFilterGroup={handleGroupClick}
-        usableGroup={categoryProps.usableGroup}
-        groupRatio={categoryProps.groupRatio}
-        models={groupCountModels}
-        loading={loading}
-        t={t}
-      />
+          <PricingGroups
+            filterGroup={filterGroup}
+            setFilterGroup={handleGroupClick}
+            usableGroup={categoryProps.usableGroup}
+            groupRatio={categoryProps.groupRatio}
+            models={groupCountModels}
+            loading={loading}
+            t={t}
+          />
 
-      <PricingQuotaTypes
-        filterQuotaType={filterQuotaType}
-        setFilterQuotaType={setFilterQuotaType}
-        models={quotaTypeModels}
-        loading={loading}
-        t={t}
-      />
+          <PricingQuotaTypes
+            filterQuotaType={filterQuotaType}
+            setFilterQuotaType={setFilterQuotaType}
+            models={quotaTypeModels}
+            loading={loading}
+            t={t}
+          />
 
-      <PricingTags
-        filterTag={filterTag}
-        setFilterTag={setFilterTag}
-        models={tagModels}
-        allModels={categoryProps.models}
-        loading={loading}
-        t={t}
-      />
+          <PricingTags
+            filterTag={filterTag}
+            setFilterTag={setFilterTag}
+            models={tagModels}
+            allModels={categoryProps.models}
+            loading={loading}
+            t={t}
+          />
 
-      <PricingEndpointTypes
-        filterEndpointType={filterEndpointType}
-        setFilterEndpointType={setFilterEndpointType}
-        models={endpointTypeModels}
-        allModels={categoryProps.models}
-        loading={loading}
-        t={t}
-      />
+          <PricingEndpointTypes
+            filterEndpointType={filterEndpointType}
+            setFilterEndpointType={setFilterEndpointType}
+            models={endpointTypeModels}
+            allModels={categoryProps.models}
+            loading={loading}
+            t={t}
+          />
+        </>
+      )}
     </div>
   );
 };

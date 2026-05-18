@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2023-2026 QuantumNous
+Copyright (C) 2025 QuantumNous
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -16,24 +16,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { useAuthStore } from '@/stores/auth-store'
-import { ROLE } from '@/lib/roles'
-import { MODELS_DEFAULT_SECTION } from '@/features/models/section-registry'
 
-export const Route = createFileRoute('/_authenticated/models/')({
-  beforeLoad: () => {
-    const { auth } = useAuthStore.getState()
+import React from 'react';
+import ModelPricingPage from '../../components/table/model-pricing/layout/PricingPage';
 
-    if (!auth.user || auth.user.role < ROLE.ADMIN) {
-      throw redirect({
-        to: '/403',
-      })
-    }
+const Models = () => (
+  <>
+    <ModelPricingPage modelListMode />
+  </>
+);
 
-    throw redirect({
-      to: '/models/$section',
-      params: { section: MODELS_DEFAULT_SECTION },
-    })
-  },
-})
+export default Models;

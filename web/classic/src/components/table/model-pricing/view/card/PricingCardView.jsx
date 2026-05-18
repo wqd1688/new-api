@@ -72,6 +72,7 @@ const PricingCardView = ({
   tokenUnit,
   displayPrice,
   showRatio,
+  modelListMode = false,
   t,
   selectedRowKeys = [],
   setSelectedRowKeys,
@@ -85,6 +86,8 @@ const PricingCardView = ({
   );
   const getModelKey = (model) => model.key ?? model.model_name ?? model.id;
   const isMobile = useIsMobile();
+  const priceQuotaDisplayType =
+    modelListMode && siteDisplayType === 'TOKENS' ? 'USD' : siteDisplayType;
 
   const handleCheckboxChange = (model, checked) => {
     if (!setSelectedRowKeys) return;
@@ -236,7 +239,9 @@ const PricingCardView = ({
 
   return (
     <div className='px-2 pt-2'>
-      <div className='grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4'>
+      <div
+        className={`grid gap-4 ${modelListMode ? 'models-card-grid' : 'grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3'}`}
+      >
         {paginatedModels.map((model, index) => {
           const modelKey = getModelKey(model);
           const isSelected = selectedRowKeys.includes(modelKey);
@@ -248,7 +253,7 @@ const PricingCardView = ({
             tokenUnit,
             displayPrice,
             currency,
-            quotaDisplayType: siteDisplayType,
+            quotaDisplayType: priceQuotaDisplayType,
           });
 
           return (
@@ -271,7 +276,7 @@ const PricingCardView = ({
                         {priceData.isDynamicPricing ? (
                           formatDynamicPriceSummary(priceData.billingExpr, t, priceData.usedGroupRatio)
                         ) : (
-                          formatPriceInfo(priceData, t, siteDisplayType)
+                          formatPriceInfo(priceData, t, priceQuotaDisplayType)
                         )}
                       </div>
                     </div>

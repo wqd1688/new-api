@@ -42,6 +42,7 @@ const SearchActions = memo(
     setViewMode,
     tokenUnit,
     setTokenUnit,
+    modelListMode = false,
     t,
   }) => {
     const supportsCurrencyDisplay = siteDisplayType !== 'TOKENS';
@@ -89,7 +90,7 @@ const SearchActions = memo(
           {t('复制')}
         </Button>
 
-        {!isMobile && (
+        {!isMobile && !modelListMode && (
           <>
             <Divider layout='vertical' margin='8px' />
 

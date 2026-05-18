@@ -107,6 +107,78 @@ import {
   SiX,
 } from 'react-icons/si';
 
+const zaiPath =
+  'M12.105 2L9.927 4.953H.653L2.83 2h9.276zM23.254 19.048L21.078 22h-9.242l2.174-2.952h9.244zM24 2 9.264 22H0L14.736 2H24z';
+
+function ZAIIcon({ size = '1em', style, ...rest }) {
+  return (
+    <svg
+      fill='currentColor'
+      fillRule='evenodd'
+      height={size}
+      style={{ flex: 'none', lineHeight: 1, ...style }}
+      viewBox='0 0 24 24'
+      width={size}
+      xmlns='http://www.w3.org/2000/svg'
+      {...rest}
+    >
+      <title>Z.ai</title>
+      <path d={zaiPath} />
+    </svg>
+  );
+}
+
+function ZAIAvatar({ size = 14, style, ...rest }) {
+  return (
+    <div
+      aria-label='Z.ai'
+      style={{
+        alignItems: 'center',
+        background: '#000',
+        borderRadius: '50%',
+        color: '#fff',
+        display: 'inline-flex',
+        height: size,
+        justifyContent: 'center',
+        width: size,
+        ...style,
+      }}
+      {...rest}
+    >
+      <ZAIIcon size={size} style={{ transform: 'scale(0.6)' }} color='#fff' />
+    </div>
+  );
+}
+
+function ZAICombine({ size = 14, style, ...rest }) {
+  const textSize = Math.max(Number(size) * 0.8, 10);
+  return (
+    <span
+      aria-label='Z.ai'
+      style={{
+        alignItems: 'center',
+        display: 'inline-flex',
+        gap: Math.max(Number(size) * 0.3, 4),
+        ...style,
+      }}
+      {...rest}
+    >
+      <ZAIIcon size={size} />
+      <span style={{ fontSize: textSize, lineHeight: 1, whiteSpace: 'nowrap' }}>
+        Z.ai
+      </span>
+    </span>
+  );
+}
+
+ZAIIcon.Avatar = ZAIAvatar;
+ZAIIcon.Combine = ZAICombine;
+ZAIIcon.title = 'Z.ai';
+
+const customLobeIcons = {
+  ZAI: ZAIIcon,
+};
+
 // 获取侧边栏Lucide图标组件
 export function getLucideIcon(key, selected = false) {
   const size = 16;
@@ -432,10 +504,14 @@ export function getLobeHubIcon(iconName, size = 14) {
     return <Avatar size='extra-extra-small'>?</Avatar>;
   }
 
+  if (iconName === 'Z.ai' || iconName.startsWith('Z.ai.')) {
+    iconName = `ZAI${iconName.slice('Z.ai'.length)}`;
+  }
+
   // 解析组件路径与点号链式属性
   const segments = String(iconName).split('.');
   const baseKey = segments[0];
-  const BaseIcon = LobeIcons[baseKey];
+  const BaseIcon = LobeIcons[baseKey] || customLobeIcons[baseKey];
 
   let IconComponent = undefined;
   let propStartIndex = 1;
@@ -444,7 +520,7 @@ export function getLobeHubIcon(iconName, size = 14) {
     IconComponent = BaseIcon[segments[1]];
     propStartIndex = 2;
   } else {
-    IconComponent = LobeIcons[baseKey];
+    IconComponent = LobeIcons[baseKey] || customLobeIcons[baseKey];
     propStartIndex = 1;
   }
 

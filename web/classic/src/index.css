@@ -923,25 +923,26 @@ html.dark .with-pastel-balls::before {
 }
 
 .models-filter-title {
-  color: #111827;
-  font-size: 22px;
-  font-weight: 800;
+  color: var(--semi-color-text-0);
+  font-size: 16px;
+  font-weight: 700;
   line-height: 1.2;
-  margin-bottom: 26px;
+  margin-bottom: 20px;
 }
 
 .models-filter-subtitle {
-  color: #9096aa;
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  margin-bottom: 18px;
+  color: var(--semi-color-text-2);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
 }
 
 .models-vendor-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .models-vendor-item {

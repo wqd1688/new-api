@@ -30,6 +30,7 @@ import { useSidebarCollapsed } from '../../hooks/common/useSidebarCollapsed';
 import { useTranslation } from 'react-i18next';
 import {
   API,
+  getFavicon,
   getLogo,
   getSystemName,
   showError,
@@ -109,11 +110,11 @@ const PageLayout = () => {
     if (systemName) {
       document.title = systemName;
     }
-    let logo = getLogo();
-    if (logo) {
+    let favicon = getFavicon();
+    if (favicon) {
       let linkElement = document.querySelector("link[rel~='icon']");
       if (linkElement) {
-        linkElement.href = logo;
+        linkElement.href = favicon;
       }
     }
   }, []);

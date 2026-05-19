@@ -2,12 +2,49 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Primary Meta Tags -->
     <title>New API</title>
     <meta name="title" content="New API" />
+    <script>
+      ;(() => {
+        try {
+          const readStatus = () => {
+            try {
+              const saved = localStorage.getItem('status')
+              return saved ? JSON.parse(saved) : null
+            } catch {
+              return null
+            }
+          }
+          const status = readStatus()
+          const readLogo = (value) => {
+            if (typeof value !== 'string') return null
+            const normalized = value.trim()
+            if (
+              !normalized ||
+              normalized === 'undefined' ||
+              normalized === 'null'
+            ) {
+              return null
+            }
+            return normalized
+          }
+          const systemName =
+            localStorage.getItem('system_name') || status?.system_name
+          const logo = readLogo(status?.logo)
+          if (systemName) {
+            document.title = systemName
+            const metaTitle = document.querySelector('meta[name="title"]')
+            if (metaTitle) metaTitle.setAttribute('content', systemName)
+          }
+          const icon = document.querySelector('link[rel~="icon"]')
+          if (icon) icon.href = logo || '/favicon.ico'
+        } catch {}
+      })()
+    </script>
     <meta
       name="description"
       content="Unified AI API gateway and admin dashboard."

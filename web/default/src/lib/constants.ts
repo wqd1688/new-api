@@ -23,6 +23,26 @@ For commercial licensing, please contact support@quantumnous.com
 // System Configuration Defaults
 export const DEFAULT_SYSTEM_NAME = 'New API'
 export const DEFAULT_LOGO = '/logo.png'
+export const DEFAULT_FAVICON = '/favicon.ico'
+
+export function getConfiguredAssetUrl(value: unknown): string | null {
+  if (typeof value !== 'string') return null
+
+  const normalized = value.trim()
+  if (
+    !normalized ||
+    normalized === 'undefined' ||
+    normalized === 'null'
+  ) {
+    return null
+  }
+
+  return normalized
+}
+
+export function resolveConfiguredLogo(value: unknown): string {
+  return getConfiguredAssetUrl(value) ?? DEFAULT_LOGO
+}
 
 // LocalStorage Keys
 export const STORAGE_KEYS = {

@@ -30,6 +30,7 @@ import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
 import { getStatus } from '@/lib/api'
 import '@/lib/dayjs'
+import { DEFAULT_FAVICON, getConfiguredAssetUrl } from '@/lib/constants'
 import { applyFaviconToDom } from '@/lib/dom-utils'
 import { handleServerError } from '@/lib/handle-server-error'
 import { DirectionProvider } from './context/direction-provider'
@@ -126,7 +127,7 @@ const rootElement = document.getElementById('root')!
       if (saved) {
         const s = JSON.parse(saved)
         if (s?.system_name) apply(s.system_name)
-        if (s?.logo) applyFaviconToDom(s.logo)
+        applyFaviconToDom(getConfiguredAssetUrl(s?.logo) ?? DEFAULT_FAVICON)
       }
     } catch {
       /* empty */
@@ -142,7 +143,7 @@ const rootElement = document.getElementById('root')!
             /* empty */
           }
         }
-        if (s?.logo) applyFaviconToDom(s.logo as string)
+        applyFaviconToDom(getConfiguredAssetUrl(s?.logo) ?? DEFAULT_FAVICON)
       })
       .catch(() => {
         /* empty */

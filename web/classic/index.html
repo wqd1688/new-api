@@ -2,7 +2,7 @@
 <html lang="zh">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="/logo.png" />
+    <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#ffffff" />
     <meta
@@ -17,6 +17,40 @@
     />
     <meta name="generator" content="new-api" />
     <title>New API</title>
+    <script>
+      ;(() => {
+        try {
+          const readStatus = () => {
+            try {
+              const savedStatus = localStorage.getItem('status')
+              return savedStatus ? JSON.parse(savedStatus) : null
+            } catch {
+              return null
+            }
+          }
+          const status = readStatus()
+          const readLogo = (value) => {
+            if (typeof value !== 'string') return null
+            const normalized = value.trim()
+            if (
+              !normalized ||
+              normalized === 'undefined' ||
+              normalized === 'null'
+            ) {
+              return null
+            }
+            return normalized
+          }
+          const systemName =
+            localStorage.getItem('system_name') || status?.system_name
+          const logo =
+            readLogo(localStorage.getItem('logo')) || readLogo(status?.logo)
+          if (systemName) document.title = systemName
+          const icon = document.querySelector('link[rel~="icon"]')
+          if (icon) icon.href = logo || '/favicon.ico'
+        } catch {}
+      })()
+    </script>
     <!--umami-->
     <!--Google Analytics-->
   </head>

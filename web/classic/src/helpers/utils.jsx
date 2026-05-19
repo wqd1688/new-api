@@ -52,10 +52,27 @@ export function getSystemName() {
   return system_name;
 }
 
-export function getLogo() {
+export const trimPriceTrailingZeros = (value) => {
+  if (typeof value !== 'string') return value;
+  return value
+    .replace(/(\d[\d,]*\.\d*?[1-9])0+(?=\D|$)/g, '$1')
+    .replace(/(\d[\d,]*)\.0+(?=\D|$)/g, '$1');
+};
+
+export function getConfiguredLogo() {
   let logo = localStorage.getItem('logo');
-  if (!logo) return '/logo.png';
+  if (typeof logo !== 'string') return null;
+  logo = logo.trim();
+  if (!logo || logo === 'undefined' || logo === 'null') return null;
   return logo;
+}
+
+export function getLogo() {
+  return getConfiguredLogo() || '/logo.png';
+}
+
+export function getFavicon() {
+  return getConfiguredLogo() || '/favicon.ico';
 }
 
 export function getUserIdFromLocalStorage() {
@@ -708,7 +725,9 @@ export const calculateModelPrice = ({
       const rawDisplayPrice = displayPrice(priceUSD);
       const numericPrice =
         parseFloat(rawDisplayPrice.replace(/[^0-9.]/g, '')) / unitDivisor;
-      return `${symbol}${numericPrice.toFixed(precision)}`;
+      return trimPriceTrailingZeros(
+        `${symbol}${numericPrice.toFixed(precision)}`,
+      );
     };
 
     const inputPrice = formatTokenPrice(inputRatioPriceUSD);
@@ -753,7 +772,7 @@ export const calculateModelPrice = ({
     const displayVal = displayPrice(priceUSD);
 
     return {
-      price: displayVal,
+      price: trimPriceTrailingZeros(displayVal),
       isPerToken: false,
       isTokensDisplay: false,
       usedGroup,
@@ -944,13 +963,17 @@ export const formatDynamicPriceSummary = (billingExpr, t, groupRatio = 1) => {
     <>
       {hasCoeffs && (
         <>
-          {varLabels.map(([key, label]) =>
-            key in varCoeffs ? (
+          {varLabels.map(([key, label]) => {
+            if (!(key in varCoeffs)) return null;
+            const formattedPrice = trimPriceTrailingZeros(
+              `${symbol}${(varCoeffs[key] * gr * rate).toFixed(4)}`,
+            );
+            return (
               <span key={key} style={lineStyle}>
-                {`${t(label)} ${symbol}${(varCoeffs[key] * gr * rate).toFixed(4)}${unitSuffix}`}
+                {`${t(label)} ${formattedPrice}${unitSuffix}`}
               </span>
-            ) : null,
-          )}
+            );
+          })}
         </>
       )}
       {(tierCount > 1 || hasTimeCondition || hasRequestCondition) && (
